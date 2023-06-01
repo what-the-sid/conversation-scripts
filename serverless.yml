@@ -1,0 +1,121 @@
+service: SienaCXConv
+plugins:
+  - serverless-deployment-bucket
+  - serverless-offline
+
+package:
+  exclude:
+    - node_modules/**
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: ${self:custom.region}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:GetObject"
+        - "s3:DeleteObject"
+        - "s3:GetBucketAcl"
+        - "s3:PutObject"
+        - "s3:PutObjectAcl"
+        - "dynamodb:PutItem"
+        - "dynamodb:GetItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:DeleteItem"
+        - "dynamodb:BatchGetItem"
+        - "dynamodb:BatchWriteItem"
+        - "dynamodb:Scan"
+        - "dynamodb:Query"
+      Resource: "*"
+  deploymentBucket:
+    name: ${self:custom.bucket-name}
+    serverSideEncryption: AES256
+    blockPublicAccess: true
+  environment:
+    BUCKET: conversation-csv
+    GOOGLE_APPLICATION_CREDENTIALS: './gcloud-credentials.json'
+    GCLOUD_PROJECT: siena-cx-chatbot
+    PROJECTID: siena-cx-chatbot
+    CONV_TABLE: conversation-data
+    USER_TABLE: user-data
+  tags:
+    env: ${self:provider.stage, self:custom.defaultStage}:${self:provider.region}
+    Environment: ${self:provider.stage, self:custom.defaultStage}
+    version: ${file(package.json):version}
+
+custom:
+  stage: ${opt:stage,'staging'} # Default value to deploy in staging environment
+  bucket-name: serverless-artifacts-siena
+  region: us-east-1
+  aws-account-id: '294778484587'
+  prefix: siena-cx
+  deploymentBucket:
+    versioning: true
+  config:
+    staging:
+      memory: 256
+      timeout: 360
+    production:
+      memory: 512
+      timeout: 360
+
+functions: # production
+  upload-csv: # metadata.name
+    description: process delta files
+    name: siena-cx-upload-csv
+    memorySize: ${self:custom.config.${self:custom.stage}.memory}
+    handler: scripts/upload-csv.handler # ../path/script.handler
+    timeout: 360
+    events:
+      - http:
+          path: upload-csv
+          method: put
+  process-csv: # metadata.name
+    description: process delta files
+    name: siena-cx-process-csv
+    memorySize: ${self:custom.config.${self:custom.stage}.memory}
+    handler: scripts/process-csv.handler # ../path/script.handler
+    timeout: 720
+    events:
+      - s3:
+          bucket: conversation-csv
+          event: s3:ObjectCreated:Put
+          rules:
+            - suffix: .csv
+          existing: true
+  create-intent: # metadata.name
+    description: process delta files
+    name: siena-cx-create-intent
+    memorySize: ${self:custom.config.${self:custom.stage}.memory}
+    handler: scripts/create-intents.handler # ../path/script.handler
+    timeout: 360
+    events:
+      - http:
+          path: create-intents
+          method: post
+  get-conversations: # metadata.name
+    description: process delta files
+    name: siena-cx-get-conversations
+    memorySize: ${self:custom.config.${self:custom.stage}.memory}
+    handler: scripts/get-conversations.handler # ../path/script.handler
+    timeout: 360
+    events:
+      - http:
+          path: conversations
+          method: get
+  get-chats: # metadata.name
+    description: process delta files
+    name: siena-cx-get-chats
+    memorySize: ${self:custom.config.${self:custom.stage}.memory}
+    handler: scripts/get-chats.handler # ../path/script.handler
+    timeout: 360
+    events:
+      - http:
+          path: conversations/{id}/chat
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
