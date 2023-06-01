@@ -1,3 +1,65 @@
+# Conversation Scripts
+##### Serverless scripts to handle conversations from CSV and fetch it through APIs
+##
+[API Documentation](https://documenter.getpostman.com/view/25655079/2s93mBxKZw) from postman can be found here
+
+
+
+
+## API Reference
+
+```http
+BASE_URL: https://z20oldsi76.execute-api.us-east-1.amazonaws.com/production
+```
+
+#### Get all conversations
+
+```http
+  PUT /upload-csv
+```
+
+| Query | Type     | Mandatory                |
+| :-------- | :------- | :------------------------- |
+| `file` | `file` | **Required**|
+
+#### Get all conversations
+
+```http
+  GET /conversations?pageNumber=1&pageSize=5
+```
+
+| Query | Type     | Mandatory                |
+| :-------- | :------- | :------------------------- |
+| `pageNumber` | `string` | **Required**|
+| `pageSize` | `string` | **Required**|
+
+
+#### Get all Chats
+
+```http
+  GET /conversations/{id}/?pageNumber=1&pageSize=5
+```
+`id` is the `group_id` from the **Get all conversations** response
+
+| Query | Type     | Mandatory                |
+| :-------- | :------- | :------------------------- |
+| `pageNumber` | `string` | **Required**|
+| `pageSize` | `string` | **Required**|
+
+#### Create New Intent
+
+```http
+  POST /create-intents
+```
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `phrases` | `string` | **Required**, Phrases that a user can enter|
+| `responses` | `string` | **Required**, Responses to be passed per channel|
+
+
+
+
 
 ## Deployment
 
@@ -56,4 +118,13 @@ Create AWS resources with these commands:
 **deploy scripts**
 ```bash
   sls deploy -s production -r us-east-1
+```
+
+
+## Run Locally
+
+To run locally, run the following command
+
+```bash
+  sls offline
 ```
