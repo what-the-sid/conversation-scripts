@@ -1,0 +1,155 @@
+{
+	"info": {
+		"_postman_id": "2b70b647-de46-4c90-bc64-4a3bcb85e252",
+		"name": "Conversation-scripts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "upload-csv",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/Users/sidharth/Downloads/annual-enterprise-survey-2021-financial-year-provisional-size-bands-csv.csv"
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/staging/upload-csv",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"staging",
+						"upload-csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-intents",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"phrases\":[\n        \"where is the order\",\n        \"is my order shipped\",\n        \"what is the status of my order\",\n        \"how can I track my order\",\n        \"track my order\",\n        \"when will my order gets delivered\",\n        \"what is the delivery date of my order\"\n    ],\n    \"responses\":{\n        \"instagram\":\"Hurray!!!Your order is on the way\",\n        \"facebook\":\"Yeah!! Your order is in transit\",\n        \"whatsapp\":\"Here is the link to track your order\",\n        \"email\":\"Please track your order from the link given below. Please let us know if you have more queries\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/staging/create-intents",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"staging",
+						"create-intents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "process-csv",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Records\":[\n        {\n            \"s3\":{\n                \"bucket\":{\n                    \"name\":\"conversation-csv\"\n                },\n                \"object\":{\n                    \"key\":\"dc5060b4-ca84-4c01-ad4f-8e13f26c26a2.csv\"\n                }\n            }\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/staging/process-csv",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"staging",
+						"process-csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Conversations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/staging/conversations?pageNumber=1&pageSize=5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"staging",
+						"conversations"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Chats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/staging/conversations/QGhlbGxvd29ybGQvQG5ld3NtYW4=/chat?pageNumber=1&pageSize=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"staging",
+						"conversations",
+						"QGhlbGxvd29ybGQvQG5ld3NtYW4=",
+						"chat"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
