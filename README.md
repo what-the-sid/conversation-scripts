@@ -1,3 +1,6 @@
+```bash
+Note: GCP Service account tokens are revoked ones
+```
 # Conversation Scripts
 ##### Serverless scripts to handle conversations from CSV and fetch it through APIs
 ##
